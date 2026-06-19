@@ -1,0 +1,45 @@
+# Environment variables - NEVER commit
+.env
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# Build
+target/
+*.class
+
+# OS
+.DS_Store
+Thumbs.db
+
+HELP.md
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
