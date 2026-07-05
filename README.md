@@ -52,6 +52,10 @@ The application uses environment-based configuration. Set the following values b
 - DB_PASSWORD
 - JWT_SECRET
 
+The project is configured to initialize SQL data on startup for MySQL using:
+- `spring.jpa.defer-datasource-initialization=true`
+- `spring.sql.init.mode=always`
+
 These values are expected by the application properties in the project.
 
 ## Running locally
@@ -71,6 +75,14 @@ The application will start on port 8080 by default.
 ### Authentication
 - POST `/api/auth/register`
 - POST `/api/auth/login`
+
+### Category Management
+- GET `/api/categories`
+- GET `/api/categories/default`
+- GET `/api/categories/custom`
+- POST `/api/categories`
+- PUT `/api/categories/{id}`
+- DELETE `/api/categories/{id}`
 
 Example request body for registration:
 
