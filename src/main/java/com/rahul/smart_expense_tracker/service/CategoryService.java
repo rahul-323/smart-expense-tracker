@@ -2,6 +2,7 @@ package com.rahul.smart_expense_tracker.service;
 
 import com.rahul.smart_expense_tracker.dto.request.CategoryRequest;
 import com.rahul.smart_expense_tracker.dto.response.CategoryResponse;
+import org.apache.coyote.BadRequestException;
 
 import java.util.List;
 
@@ -22,8 +23,8 @@ public interface CategoryService {
     CategoryResponse getCategoryById(Long categoryId, String email);
 
     // Update a custom category (can't update default ones)
-    CategoryResponse updateCategory(Long categoryId, CategoryRequest request, String email);
+    CategoryResponse updateCategory(Long categoryId, CategoryRequest request, String email) throws BadRequestException;
 
     // Soft delete a custom category (can't delete default ones)
-    void deleteCategory(Long categoryId, String email);
+    void deleteCategory(Long categoryId, String email) throws BadRequestException;
 }

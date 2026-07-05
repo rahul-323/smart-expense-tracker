@@ -30,26 +30,26 @@ public class User {
     private Long userId;
 
     @NotBlank(message = "Name is required")
-    @Size(min = 2,max = 50)
+    @Size(min = 2, max = 50)
     @Column(nullable = false)
     private String name;
 
     @Email(message = "Invalid email format")
     @NotBlank(message = "Email cannot be blank")
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @NotBlank(message = "Password cannot be blank")
-    @Size(min = 8,message = "Password must at least be 8 characters")
+    @Size(min = 8, message = "Password must at least be 8 characters")
     @Column(nullable = false)
     private String password;
 
-    @Size(min = 10,max = 10,message = "Phone number must be 10 digits")
+    @Size(min = 10, max = 10, message = "Phone number must be 10 digits")
     private String phone;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserRole userRole=UserRole.ROLE_USER;
+    private UserRole userRole = UserRole.ROLE_USER;
 
     private BigDecimal monthlyIncome;
 
@@ -62,8 +62,5 @@ public class User {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
-
-
 
 }

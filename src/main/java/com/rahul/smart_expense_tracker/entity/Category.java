@@ -10,7 +10,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "category",uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"names","user_user_id"})})
+        @UniqueConstraint(columnNames = {"name","user_user_id"})})
 @Getter
 @Setter
 @NoArgsConstructor
