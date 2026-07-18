@@ -2,7 +2,6 @@ package com.rahul.smart_expense_tracker.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -28,6 +27,7 @@ public class JwtUtils {
         byte[] keyBytes = jwtSecret.getBytes();
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
     // ─── Generate JWT token after successful login ───
     public String generateToken(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -37,11 +37,11 @@ public class JwtUtils {
 
         assert userDetails != null;
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())     // email goes here
-                .setIssuedAt(now)                          // token created at
-                .setExpiration(expiryDate)                 // token expires at
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)  // sign with secret
-                .compact();                                // build the token string
+                .setSubject(userDetails.getUsername()) // email goes here
+                .setIssuedAt(now) // token created at
+                .setExpiration(expiryDate) // token expires at
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256) // sign with secret
+                .compact(); // build the token string
     }
 
     // ─── Extract email from token ───
