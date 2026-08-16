@@ -67,5 +67,44 @@ public interface ExpenseRepository extends JpaRepository<Expense,Long>, JpaSpeci
     );
 
 
+    // Category-wise breakdown: returns [categoryName, icon, color, totalAmount, count]
+    @Query("SELECT c.name, c.icon, c.color, SUM(e.amount), COUNT(e) " +
+            "FROM Expense e JOIN e.category c " +
+            "WHERE e.user.userId = :userId " +
+            "AND e.expenseDate BETWEEN :startDate AND :endDate " +
+            "AND e.status = 'CONFIRMED' " +
+            "GROUP BY c.categoryId, c.name, c.icon, c.color " +
+            "ORDER BY SUM(e.amount) DESC")
+    List<Object []> getCategoryWiseBreakdown(@Param("userId") Long userId,
+                                             @Param("startDate") LocalDate startDate,
+                                             @Param("endDate") LocalDate endDate);
+
+
+    // Daily totals for a month: returns [expenseDate, totalAmount]
+    @Query("SELECT e.expenseDate, SUM(e.amount) " +
+            "FROM Expense e " +
+            "WHERE e.user.userId = :userId " +
+            "AND e.expenseDate BETWEEN :startDate AND :endDate " +
+            "AND e.status = 'CONFIRMED' " +
+            "GROUP BY e.expenseDate " +
+            "ORDER BY e.expenseDate ASC")
+    List<Object[]> getDailyExpenseTotals(
+            @Param("userId") Long userId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
+    // Top N highest expenses in date range
+    @Query("SELECT e FROM Expense e " +
+            "WHERE e.user.userId = :userId " +
+            "AND e.expenseDate BETWEEN :startDate AND :endDate " +
+            "AND e.status = 'CONFIRMED' " +
+            "ORDER BY e.amount DESC")
+    List<Expense> getTopExpenses(
+            @Param("userId") Long userId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            Pageable pageable
+    );
 
 }
