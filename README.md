@@ -1,189 +1,360 @@
-# Smart Expense Tracker
+# 💰 Smart Expense Tracker API
 
-Smart Expense Tracker is a Spring Boot backend for a personal finance application focused on user authentication, category management, and expense tracking with tag-based organization.
+A comprehensive **RESTful backend** for personal finance management — track expenses and income, set category budgets with real-time alerts, view analytics dashboards, and automate recurring transactions. Built with **Java 21** and **Spring Boot 3.4.5**, secured with **JWT authentication**.
 
-## Overview
+![Java](https://img.shields.io/badge/Java-21-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.5-brightgreen)
+![Security](https://img.shields.io/badge/Security-JWT-blue)
+![Database](https://img.shields.io/badge/Database-MySQL-blue)
+![Tests](https://img.shields.io/badge/Tests-JUnit%205%20%2B%20Mockito-red)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
-This project exposes a secure REST API for:
-- user registration and login
-- JWT-based authentication and authorization
-- category management
-- expense CRUD operations
-- expense filtering, pagination, and search
-- tag creation and association through the expense flow
-- persistence with MySQL using JPA/Hibernate
+---
 
-## Current implementation status
+## 📋 Table of Contents
 
-The backend already includes:
-- Spring Security configuration with JWT support
-- user registration and login endpoints
-- protected resource access for authenticated users
-- category endpoints for default, custom, and user-specific categories
-- full expense CRUD support with pagination and filtering
-- expense tag support via a many-to-many relationship with automatic tag creation
-- DTOs, mappers, repositories, services, and centralized exception handling
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Architecture](#-architecture)
+- [Getting Started](#-getting-started)
+- [Configuration](#-configuration)
+- [API Documentation](#-api-documentation)
+- [API Endpoints](#-api-endpoints)
+- [Database Schema](#-database-schema)
+- [Testing](#-testing)
+- [Project Structure](#-project-structure)
+- [Author](#-author)
 
-The following areas are still under development or planned for later:
-- income tracking
-- budget management
-- recurring expenses
-- analytics and reports
+---
 
-## Tech stack
+## ✨ Features
 
-- Java 21
-- Spring Boot 3.x
-- Spring Security
-- Spring Data JPA
-- Hibernate
-- MySQL
-- JWT (jjwt)
-- Lombok
-- Maven
+### 🔐 Authentication & Security
+- User registration and login with **JWT** token-based authentication
+- **BCrypt** password hashing
+- Role-based access control (USER / ADMIN)
+- Global exception handling with consistent error responses
+- Request validation with Jakarta Bean Validation
 
-## Prerequisites
+### 💸 Expense Management
+- Full CRUD operations for expenses
+- **Dynamic multi-criteria filtering** (category, date range, amount range, payment method, status, tags)
+- **Pagination and sorting** on all list endpoints
+- Keyword search across descriptions
+- Tag support (many-to-many, auto-created)
 
-Before running the project, make sure you have:
-- JDK 21 or newer
-- Maven
-- a running MySQL server
+### 💰 Income Tracking
+- Full CRUD for income entries
+- Filter by date range and source
+- Recurring income flag
 
-## Configuration
+### 📂 Category Management
+- 14 pre-seeded default categories
+- User-created custom categories
+- Soft-delete support (preserves referential integrity)
+- Ownership protection (users manage only their own categories)
 
-The application uses environment-based configuration. Set the following values before running it:
-- DB_USERNAME
-- DB_PASSWORD
-- JWT_SECRET
+### 📊 Budget Management
+- Set monthly spending limits per category
+- **Real-time budget status calculation** (ON_TRACK / WARNING / EXCEEDED)
+- Configurable alert thresholds
+- Database-level duplicate prevention (unique constraints)
 
-The project is configured to initialize SQL data on startup for MySQL using:
-- `spring.jpa.defer-datasource-initialization=true`
-- `spring.sql.init.mode=always`
+### 📈 Analytics Dashboard
+- Monthly financial summary (income vs expense vs savings)
+- Category-wise expense breakdown with percentages
+- 6-month income/expense trend
+- Daily expense breakdown
+- Top 5 highest expenses
 
-## Running locally
+### 🔄 Recurring Expenses & Scheduling
+- Automated recurring expenses (DAILY / WEEKLY / MONTHLY / YEARLY)
+- **Scheduled background jobs** (`@Scheduled` cron) that auto-generate expenses
+- Auto-expiry of ended recurring expenses
+- Daily budget alert scheduler
+- Pause / resume support
 
-1. Create a MySQL database named `smart_expense_tracker`
-2. Set the required environment variables
-3. Run:
+### 📤 Data Export
+- Export all expenses or a specific month as **CSV**
+- Proper file-download HTTP headers
 
+---
+
+## 🛠 Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Language** | Java 21 |
+| **Framework** | Spring Boot 3.4.5 |
+| **Security** | Spring Security + JWT (JJWT 0.11.5) |
+| **Persistence** | Spring Data JPA / Hibernate |
+| **Database** | MySQL 8 (H2 for tests) |
+| **Validation** | Jakarta Bean Validation |
+| **Boilerplate** | Lombok |
+| **API Docs** | SpringDoc OpenAPI (Swagger UI) |
+| **Monitoring** | Spring Boot Actuator |
+| **Export** | OpenCSV |
+| **Testing** | JUnit 5, Mockito, AssertJ, MockMvc |
+| **Build Tool** | Maven |
+
+---
+
+## 🏗 Architecture
+
+The application follows a clean **3-tier layered architecture** with clear separation of concerns:
+
+```
+┌──────────────────────────────────────────────┐
+│  PRESENTATION LAYER (Controllers)             │
+│  Handle HTTP requests, validation, responses  │
+└──────────────────────┬───────────────────────┘
+                       ↓
+┌──────────────────────────────────────────────┐
+│  BUSINESS LOGIC LAYER (Services)              │
+│  Business rules, orchestration, transactions  │
+│  (Interface + Implementation pattern)         │
+└──────────────────────┬───────────────────────┘
+                       ↓
+┌──────────────────────────────────────────────┐
+│  DATA ACCESS LAYER (Repositories)             │
+│  Spring Data JPA + custom JPQL + Specifications│
+└──────────────────────┬───────────────────────┘
+                       ↓
+┌──────────────────────────────────────────────┐
+│  DATABASE (MySQL)                             │
+└──────────────────────────────────────────────┘
+```
+
+**Key design patterns:**
+- **DTO Pattern** — API contracts decoupled from database entities
+- **Mapper Pattern** — clean entity ↔ DTO conversion
+- **Service Interface + Impl** — loose coupling, easy mocking
+- **JPA Specifications** — dynamic runtime query building
+- **Soft Delete** — data integrity preservation
+- **Ownership Scoping** — every query filtered by authenticated user (from JWT)
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Java 21+
+- MySQL 8+
+- Maven 3.8+
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/rahul-323/smart-expense-tracker.git
+   cd smart-expense-tracker
+   ```
+
+2. **Create the MySQL database**
+   ```sql
+   CREATE DATABASE smart_expense_tracker;
+   ```
+
+3. **Set up environment variables** — copy `.env.example` to `.env` and fill in your values
+   ```bash
+   cp .env.example .env
+   ```
+
+4. **Build the project**
+   ```bash
+   mvn clean install
+   ```
+
+5. **Run the application**
+   ```bash
+   mvn spring-boot:run
+   ```
+
+The API starts at **`http://localhost:8080`**
+
+---
+
+## ⚙️ Configuration
+
+Environment variables (defined in `.env`):
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `DB_USERNAME` | MySQL username | `root` |
+| `DB_PASSWORD` | MySQL password | `your_password` |
+| `DB_HOST` | Database host | `localhost` |
+| `DB_PORT` | Database port | `3306` |
+| `DB_NAME` | Database name | `smart_expense_tracker` |
+| `JWT_SECRET` | Secret key for signing JWT (min 256 bits) | `your_secret_key` |
+
+> ⚠️ **Never commit your `.env` file.** It is already listed in `.gitignore`.
+
+---
+
+## 📖 API Documentation
+
+Interactive **Swagger UI** is available once the app is running:
+
+```
+http://localhost:8080/swagger-ui.html
+```
+
+Click **Authorize**, paste your JWT token (from `/api/auth/login`), and test every endpoint directly from the browser.
+
+A complete **Postman collection** (`Smart-Expense-Tracker-Postman-Collection.json`) is included in the repo — it auto-saves the JWT token after login and covers all 79 requests.
+
+---
+
+## 📡 API Endpoints
+
+Base URL: `http://localhost:8080/api`
+
+### 🔐 Authentication
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/auth/register` | Register a new user | ❌ |
+| POST | `/auth/login` | Login, returns JWT | ❌ |
+| POST | `/auth/change-password` | Change password | ✅ |
+
+### 📂 Categories
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/categories` | All categories (default + custom) |
+| GET | `/categories/default` | Default categories only |
+| GET | `/categories/custom` | User's custom categories |
+| POST | `/categories` | Create custom category |
+| PUT | `/categories/{id}` | Update custom category |
+| DELETE | `/categories/{id}` | Soft-delete custom category |
+
+### 💸 Expenses
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/expenses` | Create expense |
+| GET | `/expenses` | List (paginated) |
+| GET | `/expenses/{id}` | Get by ID |
+| PUT | `/expenses/{id}` | Update expense |
+| DELETE | `/expenses/{id}` | Delete expense |
+| GET | `/expenses/filter` | Multi-criteria filter |
+| GET | `/expenses/search` | Keyword search |
+
+### 💰 Incomes
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/incomes` | Add income |
+| GET | `/incomes` | List (paginated) |
+| GET | `/incomes/{id}` | Get by ID |
+| PUT | `/incomes/{id}` | Update income |
+| DELETE | `/incomes/{id}` | Delete income |
+| GET | `/incomes/filter` | Filter by date/source |
+
+### 📊 Budgets
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/budgets` | Set budget |
+| GET | `/budgets` | Current month budgets |
+| GET | `/budgets/{id}` | Get by ID |
+| GET | `/budgets/month/{year}/{month}` | Budgets for a month |
+| GET | `/budgets/status` | ⭐ Real-time budget status |
+| PUT | `/budgets/{id}` | Update budget |
+| DELETE | `/budgets/{id}` | Delete budget |
+
+### 📈 Dashboard
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/dashboard/summary` | Monthly financial summary |
+| GET | `/dashboard/summary/{year}/{month}` | Summary for a month |
+| GET | `/dashboard/category-breakdown` | Category-wise breakdown |
+| GET | `/dashboard/monthly-trend` | Last 6 months trend |
+| GET | `/dashboard/daily-expenses/{year}/{month}` | Daily expenses |
+| GET | `/dashboard/top-expenses` | Top 5 expenses |
+
+### 🔄 Recurring Expenses
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/recurring-expenses` | Create recurring expense |
+| GET | `/recurring-expenses` | List all |
+| GET | `/recurring-expenses/{id}` | Get by ID |
+| PUT | `/recurring-expenses/{id}` | Update |
+| PATCH | `/recurring-expenses/{id}/toggle` | Pause / resume |
+| DELETE | `/recurring-expenses/{id}` | Delete |
+
+### 📤 Export
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/export/csv` | Export all expenses as CSV |
+| GET | `/export/csv?month=6&year=2026` | Export a month as CSV |
+
+---
+
+## 🗄 Database Schema
+
+**Core entities and relationships:**
+
+- **User** `1───N` Expense, Income, Budget, RecurringExpense, custom Category
+- **Category** `1───N` Expense, Budget, RecurringExpense
+- **Expense** `N───M` Tag (via `expense_tags` junction table)
+
+Money is stored as `BigDecimal(12,2)` for precision. Indexes are placed on `user_id` and date columns for query performance. Budgets enforce a unique constraint on `(user, category, month, year)`.
+
+---
+
+## 🧪 Testing
+
+The project includes comprehensive tests following the **testing pyramid**:
+
+- **Service unit tests** — Mockito-based, business logic in isolation
+- **Repository tests** — `@DataJpaTest` with H2 in-memory database
+- **Controller tests** — MockMvc for HTTP layer
+
+Run tests:
 ```bash
-./mvnw spring-boot:run
+mvn test
 ```
 
-The application starts on port `8080` by default.
-
-## API endpoints
-
-### Authentication
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-
-### Category Management
-- `GET /api/categories`
-- `GET /api/categories/default`
-- `GET /api/categories/custom`
-- `GET /api/categories/{id}`
-- `POST /api/categories`
-- `PUT /api/categories/{id}`
-- `DELETE /api/categories/{id}`
-
-### Expense Management
-- `POST /api/expenses`
-- `GET /api/expenses`
-- `GET /api/expenses/{id}`
-- `PUT /api/expenses/{id}`
-- `DELETE /api/expenses/{id}`
-- `GET /api/expenses/filter`
-- `GET /api/expenses/search`
-
-### Expense request structure
-
-The `ExpenseRequest` payload supports the following fields:
-- `amount`
-- `description`
-- `note`
-- `expenseDate`
-- `categoryId`
-- `paymentMethod`
-- `receiptUrl`
-- `status`
-- `tagNames`
-
-Example expense creation request:
-
-```json
-{
-  "amount": 1500.00,
-  "description": "Office lunch",
-  "note": "Team lunch with client",
-  "expenseDate": "2026-07-19",
-  "categoryId": 1,
-  "paymentMethod": "CARD",
-  "receiptUrl": "https://example.com/receipt/1",
-  "status": "CONFIRMED",
-  "tagNames": ["food", "office", "team"]
-}
+Generate coverage report (JaCoCo):
+```bash
+mvn test
+# Open target/site/jacoco/index.html
 ```
 
-### Expense filtering and search
+Boundary conditions (budget thresholds, empty datasets, duplicate prevention, ownership violations) are explicitly covered.
 
-The expense controller supports:
-- pagination with `page`, `size`, `sortBy`, and `sortDir`
-- filtering by `categoryId`, `startDate`, `endDate`, `minAmount`, `maxAmount`, `paymentMethod`, `status`, and `tags`
-- search by keyword against the expense description
+---
 
-Example filter request:
+## 📂 Project Structure
 
-```http
-GET /api/expenses/filter?categoryId=1&startDate=2026-07-01&endDate=2026-07-31&minAmount=100&maxAmount=5000&paymentMethod=CARD&status=CONFIRMED&tags=food,taxi&page=0&size=10&sortBy=expenseDate&sortDir=desc
+```
+src/main/java/com/rahul/expensetracker/
+├── config/          # Swagger, Scheduler configuration
+├── controller/      # REST controllers
+├── dto/
+│   ├── request/     # Request DTOs
+│   └── response/    # Response DTOs
+├── entity/          # JPA entities
+├── enums/           # Enum types
+├── exception/       # Custom exceptions + global handler
+├── mapper/          # Entity ↔ DTO mappers
+├── repository/      # Spring Data JPA repositories
+├── scheduler/       # Scheduled background jobs
+├── security/        # JWT filter, security config
+├── service/         # Service interfaces
+│   └── impl/        # Service implementations
+└── util/            # CSV export utility
 ```
 
-## Tag support
+---
 
-Tags are modeled as a separate `Tag` entity and are connected to `Expense` through a many-to-many relationship.
+## 👨‍💻 Author
 
-Important behavior:
-- tags are stored in the `tags` table
-- tag names are case-insensitive and normalized to lowercase
-- if a tag does not exist, it is created automatically during expense creation/update
-- the tag list is sent through the expense request as `tagNames`
+**Rahul Chauhan**
+- GitHub: [@rahul-323](https://github.com/rahul-323)
 
-There is currently no separate dedicated `TagController`. Tag management happens inside the expense API flow.
+---
 
-## Entities involved
+## 📄 License
 
-### Expense entity
-The `Expense` entity includes:
-- `expenseId`
-- `amount`
-- `description`
-- `note`
-- `expenseDate`
-- `paymentMethod`
-- `receiptUrl`
-- `status`
-- `category`
-- `user`
-- `tags`
-- auditing timestamps (`createdAt`, `updatedAt`)
+This project is licensed under the MIT License.
 
-### Tag entity
-The `Tag` entity includes:
-- `tagId`
-- `name` (unique, max length 30)
-- `expenses` relationship (mapped by the expense-side many-to-many association)
+---
 
-## Project structure
-
-Key backend packages include:
-- `controller` for REST endpoints
-- `service` and `service/impl` for business logic
-- `repository` for data access
-- `entity` for JPA models
-- `mapper` for DTO-to-entity conversions
-- `security` for JWT and Spring Security setup
-- `dto` for request/response models
-
-## Notes
-
-The repository is currently backend-focused and already supports secure authentication, category management, and a working expense module with tag-based organization. Income, budget, recurring expense, and reporting modules are still being added progressively.
+⭐ If you found this project useful, please consider giving it a star!
