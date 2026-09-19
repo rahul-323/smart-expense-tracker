@@ -40,8 +40,10 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse createCategory(CategoryRequest request, String email) {
         User user = getUserByEmail(email);
 
-        if (categoryRepository.existsByNameIgnoreCaseAndUserUserId(request.getName().trim(), user.getUserId())) {
-            throw new ResourceNotFoundException("Category", "name", request.getName().trim());
+        if (categoryRepository.existsByNameIgnoreCaseAndUserUserId(
+                request.getName().trim(), user.getUserId())) {
+            throw new DuplicateResourceException(
+                    "Category", "name", request.getName().trim());
         }
         // Check 2: Does a default category with this name already exist?
         // (Don't allow user to create "Food" if system already has "Food")
@@ -107,7 +109,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
 
         if (category.getCategoryType() == CategoryType.DEFAULT) {
-            throw new BadRequestException("Cannot modify default Categories");
+            throw new BadRequestException("Cannot modify default categories");
         }
         if (category.getUser() == null || !category.getUser().getUserId().equals(user.getUserId())) {
             throw new BadRequestException("You can only update your own categories");

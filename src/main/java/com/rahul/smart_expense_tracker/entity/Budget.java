@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "budgets", indexes = {
         @Index(name = "idx_budget_user", columnList = "user_user_id"),
-        @Index(name = "idx_budget_month_year", columnList = "month, year")
+        @Index(name = "idx_budget_month_year", columnList = "budget_month,budget_year")
 })
 @Getter
 @Setter
@@ -29,10 +29,10 @@ public class Budget {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal budgetLimit;
 
-    @Column(nullable = false)
+    @Column(name = "budget_month",nullable = false)
     private Integer month;
 
-    @Column(nullable = false)
+    @Column(name = "budget_year",nullable = false)
     private Integer year;
 
     @Column(nullable = false)
@@ -40,6 +40,11 @@ public class Budget {
 
     @Column(nullable = false)
     private LocalDate endDate;
+
+    // Percentage of budgetLimit at which a WARNING status kicks in (see BudgetServiceImpl).
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer alertThreshold = 80;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_user_id", nullable = false)
