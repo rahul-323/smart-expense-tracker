@@ -1,0 +1,40 @@
+# ─────────────── MySQL Database ───────────────
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: expense-tracker-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    ports:
+      - "3307:3306" # host:container (3307 avoids clash with local MySQL)
+    volumes:
+      - mysql-data:/var/lib/mysql # persists data even if container restarts
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# ─────────────── Spring Boot App ───────────────
+  expense-tracker-app:
+    build: . # builds using the Dockerfile in current directory
+    container_name: expense-tracker-app
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      # Note: DB_HOST is the SERVICE NAME 'mysql-db', not localhost!
+      DB_HOST: mysql-db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      mysql-db:
+        condition: service_healthy # wait for MySQL to be READY first
+
+volumes:
+  mysql-data: # named volume for database persistence
