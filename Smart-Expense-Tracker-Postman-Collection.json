@@ -1,0 +1,3039 @@
+{
+  "info": {
+    "name": "🧾 Smart Expense Tracker API",
+    "description": "Complete API collection for Smart Expense Tracker built with Spring Boot, JWT Auth, MySQL.\n\nAuthor: Rahul Chauhan\nGitHub: github.com/rahul-323/smart-expense-tracker\n\n## Setup Instructions:\n1. Import this collection into Postman\n2. The `base_url` variable is pre-set to `http://localhost:8080/api`\n3. Register a user first, then login — JWT token is AUTO-SAVED\n4. All authenticated endpoints automatically use the saved token\n\n## Variable Reference:\n- `{{base_url}}` → API base URL\n- `{{jwt_token}}` → Auto-saved after login/register\n- `{{user_id}}` → Auto-saved after login/register\n- `{{category_id}}` → Set manually or from response\n- `{{expense_id}}` → Set manually or from response\n- `{{income_id}}` → Set manually or from response\n- `{{budget_id}}` → Set manually or from response\n- `{{recurring_id}}` → Set manually or from response",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080/api",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "category_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "expense_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "income_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "budget_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "recurring_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "year",
+      "value": "2026",
+      "type": "string"
+    },
+    {
+      "key": "month",
+      "value": "6",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Auth",
+      "description": "Authentication endpoints — Register, Login, Change Password.\nPublic endpoints (no JWT needed for register & login).",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Register a new user. JWT token is AUTO-SAVED to collection variables after successful registration.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Rahul Chauhan\",\n    \"email\": \"rahul@gmail.com\",\n    \"password\": \"password123\",\n    \"phone\": \"9876543210\",\n    \"monthlyIncome\": 40000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "",
+                  "if (jsonData.success && jsonData.data) {",
+                  "    pm.collectionVariables.set('jwt_token', jsonData.data.token);",
+                  "    pm.collectionVariables.set('user_id', jsonData.data.userId);",
+                  "    console.log('✅ Token saved: ' + jsonData.data.token.substring(0, 30) + '...');",
+                  "    console.log('✅ User ID saved: ' + jsonData.data.userId);",
+                  "}",
+                  "",
+                  "pm.test('Status code is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has token', function () {",
+                  "    pm.expect(jsonData.data.token).to.not.be.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Login with email and password. JWT token is AUTO-SAVED to collection variables.\n\n⚡ Run this first before testing any authenticated endpoint!",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"rahul@gmail.com\",\n    \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "",
+                  "if (jsonData.success && jsonData.data) {",
+                  "    pm.collectionVariables.set('jwt_token', jsonData.data.token);",
+                  "    pm.collectionVariables.set('user_id', jsonData.data.userId);",
+                  "    console.log('✅ Token saved: ' + jsonData.data.token.substring(0, 30) + '...');",
+                  "    console.log('✅ User ID saved: ' + jsonData.data.userId);",
+                  "}",
+                  "",
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has token', function () {",
+                  "    pm.expect(jsonData.data.token).to.not.be.empty;",
+                  "});",
+                  "",
+                  "pm.test('Login successful', function () {",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register Admin User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Register an admin user (you may need to manually update role in DB to ROLE_ADMIN).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Admin User\",\n    \"email\": \"admin@gmail.com\",\n    \"password\": \"admin12345\",\n    \"phone\": \"9876543211\",\n    \"monthlyIncome\": 100000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "",
+                  "if (jsonData.success && jsonData.data) {",
+                  "    pm.collectionVariables.set('jwt_token', jsonData.data.token);",
+                  "    pm.collectionVariables.set('user_id', jsonData.data.userId);",
+                  "    console.log('✅ Token saved: ' + jsonData.data.token.substring(0, 30) + '...');",
+                  "    console.log('✅ User ID saved: ' + jsonData.data.userId);",
+                  "}",
+                  "",
+                  "pm.test('Status code is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has token', function () {",
+                  "    pm.expect(jsonData.data.token).to.not.be.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/change-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "change-password"
+              ]
+            },
+            "description": "Change password for the currently logged-in user. Requires JWT token.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"oldPassword\": \"password123\",\n    \"newPassword\": \"newPassword456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "❌ Login — Wrong Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Test: Should return 401 Unauthorized",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"rahul@gmail.com\",\n    \"password\": \"wrongpassword\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "❌ Register — Duplicate Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Test: Should return 409 Conflict — email already exists",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Duplicate User\",\n    \"email\": \"rahul@gmail.com\",\n    \"password\": \"password123\",\n    \"phone\": \"9876543212\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "❌ Register — Validation Errors",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Test: Should return 400 Bad Request with validation error details",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"\",\n    \"email\": \"not-an-email\",\n    \"password\": \"123\",\n    \"phone\": \"12345\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 Users",
+      "description": "User profile management endpoints. All require JWT authentication.",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "profile"
+              ]
+            },
+            "description": "Get the profile of the currently logged-in user."
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "profile"
+              ]
+            },
+            "description": "Update profile details of the currently logged-in user.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Rahul R Chauhan\",\n    \"phone\": \"9876543210\",\n    \"monthlyIncome\": 45000,\n    \"currency\": \"INR\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete My Account",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "profile"
+              ]
+            },
+            "description": "⚠️ DANGER: Permanently delete the logged-in user's account and all associated data."
+          }
+        },
+        {
+          "name": "Get All Users (Admin Only)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "description": "Admin-only endpoint. Returns all registered users. Requires ROLE_ADMIN."
+          }
+        }
+      ]
+    },
+    {
+      "name": "📂 Categories",
+      "description": "Category management — 14 default categories + user custom categories.\nAll endpoints require JWT authentication.",
+      "item": [
+        {
+          "name": "Get All Categories (Default + Custom)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            },
+            "description": "Returns all categories available to the user — 14 default + user's custom categories."
+          }
+        },
+        {
+          "name": "Get Default Categories Only",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories/default",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "default"
+              ]
+            },
+            "description": "Returns only the 14 system default categories."
+          }
+        },
+        {
+          "name": "Get My Custom Categories Only",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories/custom",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "custom"
+              ]
+            },
+            "description": "Returns only the custom categories created by the logged-in user."
+          }
+        },
+        {
+          "name": "Get Category by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories/{{category_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "{{category_id}}"
+              ]
+            },
+            "description": "Get a single category by its ID. Must be a default category or belong to the current user."
+          }
+        },
+        {
+          "name": "Create Custom Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            },
+            "description": "Create a new custom category for the logged-in user. Category ID is AUTO-SAVED.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Side Hustle\",\n    \"icon\": \"\\ud83d\\udcbc\",\n    \"color\": \"#9B59B6\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.success && jsonData.data && jsonData.data.categoryId) {",
+                  "    pm.collectionVariables.set('category_id', jsonData.data.categoryId);",
+                  "    console.log('✅ Category ID saved: ' + jsonData.data.categoryId);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Custom Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories/{{category_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "{{category_id}}"
+              ]
+            },
+            "description": "Update a custom category. Cannot update default (system) categories.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Freelance Work\",\n    \"icon\": \"\\ud83d\\udcbb\",\n    \"color\": \"#E74C3C\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete Custom Category",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories/{{category_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "{{category_id}}"
+              ]
+            },
+            "description": "Soft-delete a custom category (sets isActive=false). Cannot delete default categories."
+          }
+        },
+        {
+          "name": "❌ Create Duplicate Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            },
+            "description": "Test: Should return 409 Conflict — default category with this name already exists.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Food & Dining\",\n    \"icon\": \"\\ud83c\\udf55\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "❌ Update Default Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "1"
+              ]
+            },
+            "description": "Test: Should return 400 Bad Request — cannot modify default categories.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Junk Food\",\n    \"icon\": \"\\ud83c\\udf55\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "❌ Delete Default Category",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "1"
+              ]
+            },
+            "description": "Test: Should return 400 Bad Request — cannot delete default categories."
+          }
+        }
+      ]
+    },
+    {
+      "name": "💸 Expenses",
+      "description": "Expense CRUD with filtering, pagination, search, and budget impact.\nAll endpoints require JWT authentication.",
+      "item": [
+        {
+          "name": "Create Expense",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses"
+              ]
+            },
+            "description": "Create a new expense. Links to a category. Tags are auto-created if they don't exist.\nExpense ID is AUTO-SAVED.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"amount\": 450.0,\n    \"description\": \"Lunch at Vaishali Restaurant\",\n    \"note\": \"Team lunch with Girish and Deepak\",\n    \"expenseDate\": \"2026-06-15\",\n    \"categoryId\": 1,\n    \"paymentMethod\": \"UPI\",\n    \"status\": \"CONFIRMED\",\n    \"tagNames\": [\n        \"food\",\n        \"office\"\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.success && jsonData.data && jsonData.data.expenseId) {",
+                  "    pm.collectionVariables.set('expense_id', jsonData.data.expenseId);",
+                  "    console.log('✅ Expense ID saved: ' + jsonData.data.expenseId);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Expense — Rent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses"
+              ]
+            },
+            "description": "Sample: Rent expense",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"amount\": 12000.0,\n    \"description\": \"Monthly room rent - June\",\n    \"expenseDate\": \"2026-06-01\",\n    \"categoryId\": 3,\n    \"paymentMethod\": \"NET_BANKING\",\n    \"status\": \"CONFIRMED\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Create Expense — Transport",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses"
+              ]
+            },
+            "description": "Sample: Transport expense",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"amount\": 250.0,\n    \"description\": \"Ola ride to office\",\n    \"expenseDate\": \"2026-06-15\",\n    \"categoryId\": 2,\n    \"paymentMethod\": \"UPI\",\n    \"status\": \"CONFIRMED\",\n    \"tagNames\": [\n        \"office\",\n        \"commute\"\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Create Expense — Netflix Subscription",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses"
+              ]
+            },
+            "description": "Sample: Subscription expense",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"amount\": 649.0,\n    \"description\": \"Netflix monthly subscription\",\n    \"expenseDate\": \"2026-06-05\",\n    \"categoryId\": 11,\n    \"paymentMethod\": \"CARD\",\n    \"status\": \"CONFIRMED\",\n    \"tagNames\": [\n        \"subscription\",\n        \"entertainment\"\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Get All Expenses (Paginated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses?page=0&size=10&sortBy=expenseDate&sortDir=desc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "expenseDate"
+                },
+                {
+                  "key": "sortDir",
+                  "value": "desc"
+                }
+              ]
+            },
+            "description": "Get all expenses for the logged-in user with pagination and sorting.\n\nParams:\n- page: Page number (0-indexed)\n- size: Items per page\n- sortBy: Field to sort by (expenseDate, amount, createdAt)\n- sortDir: asc or desc"
+          }
+        },
+        {
+          "name": "Get Expense by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses/{{expense_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses",
+                "{{expense_id}}"
+              ]
+            },
+            "description": "Get a single expense by its ID. Must belong to the current user."
+          }
+        },
+        {
+          "name": "Update Expense",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses/{{expense_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses",
+                "{{expense_id}}"
+              ]
+            },
+            "description": "Update an existing expense. Recalculates budget if amount or category changes.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"amount\": 500.0,\n    \"description\": \"Lunch at Vaishali Restaurant (updated)\",\n    \"note\": \"Team lunch \\u2014 bill was higher than expected\",\n    \"expenseDate\": \"2026-06-15\",\n    \"categoryId\": 1,\n    \"paymentMethod\": \"UPI\",\n    \"status\": \"CONFIRMED\",\n    \"tagNames\": [\n        \"food\",\n        \"office\",\n        \"team\"\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete Expense",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses/{{expense_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses",
+                "{{expense_id}}"
+              ]
+            },
+            "description": "Delete an expense. Budget spent amount is recalculated."
+          }
+        },
+        {
+          "name": "Filter Expenses — By Category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses/filter?categoryId=1&page=0&size=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses",
+                "filter"
+              ],
+              "query": [
+                {
+                  "key": "categoryId",
+                  "value": "1"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Filter expenses by category ID."
+          }
+        },
+        {
+          "name": "Filter Expenses — By Date Range",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses/filter?startDate=2026-06-01&endDate=2026-06-30&page=0&size=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses",
+                "filter"
+              ],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2026-06-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2026-06-30"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Filter expenses within a date range."
+          }
+        },
+        {
+          "name": "Filter Expenses — By Amount Range",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses/filter?minAmount=100&maxAmount=5000&page=0&size=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses",
+                "filter"
+              ],
+              "query": [
+                {
+                  "key": "minAmount",
+                  "value": "100"
+                },
+                {
+                  "key": "maxAmount",
+                  "value": "5000"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Filter expenses by minimum and maximum amount."
+          }
+        },
+        {
+          "name": "Filter Expenses — By Payment Method",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses/filter?paymentMethod=UPI&page=0&size=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses",
+                "filter"
+              ],
+              "query": [
+                {
+                  "key": "paymentMethod",
+                  "value": "UPI"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Filter expenses by payment method (CASH, UPI, CARD, NET_BANKING)."
+          }
+        },
+        {
+          "name": "Filter Expenses — By Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses/filter?status=CONFIRMED&page=0&size=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses",
+                "filter"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "CONFIRMED"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Filter expenses by status (CONFIRMED, PENDING, CANCELLED)."
+          }
+        },
+        {
+          "name": "Filter Expenses — By Tags",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses/filter?tags=food,office&page=0&size=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses",
+                "filter"
+              ],
+              "query": [
+                {
+                  "key": "tags",
+                  "value": "food,office"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Filter expenses by tags (comma-separated)."
+          }
+        },
+        {
+          "name": "Filter Expenses — Combined Filters",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses/filter?categoryId=1&startDate=2026-06-01&endDate=2026-06-30&minAmount=100&maxAmount=1000&paymentMethod=UPI&sortBy=amount&sortDir=desc&page=0&size=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses",
+                "filter"
+              ],
+              "query": [
+                {
+                  "key": "categoryId",
+                  "value": "1"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2026-06-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2026-06-30"
+                },
+                {
+                  "key": "minAmount",
+                  "value": "100"
+                },
+                {
+                  "key": "maxAmount",
+                  "value": "1000"
+                },
+                {
+                  "key": "paymentMethod",
+                  "value": "UPI"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "amount"
+                },
+                {
+                  "key": "sortDir",
+                  "value": "desc"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Apply multiple filters at once — category + date range + amount range + payment method + sorting."
+          }
+        },
+        {
+          "name": "Search Expenses by Keyword",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses/search?keyword=lunch&page=0&size=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": "lunch"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Search expenses by keyword in description. Case-insensitive."
+          }
+        }
+      ]
+    },
+    {
+      "name": "💰 Incomes",
+      "description": "Income tracking CRUD with filtering.\nAll endpoints require JWT authentication.",
+      "item": [
+        {
+          "name": "Add Income — Salary",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incomes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incomes"
+              ]
+            },
+            "description": "Add a new income entry. Income ID is AUTO-SAVED.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"amount\": 33000.0,\n    \"source\": \"Salary\",\n    \"description\": \"LTIMindtree June salary\",\n    \"incomeDate\": \"2026-06-01\",\n    \"isRecurring\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.success && jsonData.data && jsonData.data.incomeId) {",
+                  "    pm.collectionVariables.set('income_id', jsonData.data.incomeId);",
+                  "    console.log('✅ Income ID saved: ' + jsonData.data.incomeId);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add Income — Freelance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incomes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incomes"
+              ]
+            },
+            "description": "Sample: Freelance income",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"amount\": 5000.0,\n    \"source\": \"Freelance\",\n    \"description\": \"Website bug fix for client\",\n    \"incomeDate\": \"2026-06-10\",\n    \"isRecurring\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Get All Incomes (Paginated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incomes?page=0&size=10&sortBy=incomeDate&sortDir=desc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incomes"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "incomeDate"
+                },
+                {
+                  "key": "sortDir",
+                  "value": "desc"
+                }
+              ]
+            },
+            "description": "Get all incomes for the logged-in user with pagination and sorting."
+          }
+        },
+        {
+          "name": "Get Income by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incomes/{{income_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incomes",
+                "{{income_id}}"
+              ]
+            },
+            "description": "Get a single income entry by its ID."
+          }
+        },
+        {
+          "name": "Update Income",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incomes/{{income_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incomes",
+                "{{income_id}}"
+              ]
+            },
+            "description": "Update an existing income entry.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"amount\": 34000.0,\n    \"source\": \"Salary\",\n    \"description\": \"LTIMindtree June salary (after tax)\",\n    \"incomeDate\": \"2026-06-01\",\n    \"isRecurring\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete Income",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incomes/{{income_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incomes",
+                "{{income_id}}"
+              ]
+            },
+            "description": "Delete an income entry."
+          }
+        },
+        {
+          "name": "Filter Incomes — By Date Range",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incomes/filter?startDate=2026-06-01&endDate=2026-06-30&page=0&size=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incomes",
+                "filter"
+              ],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2026-06-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2026-06-30"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Filter incomes within a date range."
+          }
+        },
+        {
+          "name": "Filter Incomes — By Source",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incomes/filter?source=Salary&page=0&size=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incomes",
+                "filter"
+              ],
+              "query": [
+                {
+                  "key": "source",
+                  "value": "Salary"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Filter incomes by source (Salary, Freelance, Investment, etc.)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 Budgets",
+      "description": "Budget management — set spending limits per category per month.\nAll endpoints require JWT authentication.",
+      "item": [
+        {
+          "name": "Set Budget — Food & Dining",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/budgets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "budgets"
+              ]
+            },
+            "description": "Set a monthly budget for a category. Alert when spending crosses the threshold %.\nBudget ID is AUTO-SAVED.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"categoryId\": 1,\n    \"budgetLimit\": 5000.0,\n    \"month\": 6,\n    \"year\": 2026,\n    \"alertThreshold\": 80\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.success && jsonData.data && jsonData.data.budgetId) {",
+                  "    pm.collectionVariables.set('budget_id', jsonData.data.budgetId);",
+                  "    console.log('✅ Budget ID saved: ' + jsonData.data.budgetId);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Set Budget — Transport",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/budgets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "budgets"
+              ]
+            },
+            "description": "Sample: Transport budget for June 2026",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"categoryId\": 2,\n    \"budgetLimit\": 3000.0,\n    \"month\": 6,\n    \"year\": 2026,\n    \"alertThreshold\": 80\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Set Budget — Rent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/budgets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "budgets"
+              ]
+            },
+            "description": "Sample: Rent budget for June 2026",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"categoryId\": 3,\n    \"budgetLimit\": 13000.0,\n    \"month\": 6,\n    \"year\": 2026,\n    \"alertThreshold\": 90\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Set Budget — Subscriptions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/budgets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "budgets"
+              ]
+            },
+            "description": "Sample: Subscriptions budget",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"categoryId\": 11,\n    \"budgetLimit\": 1500.0,\n    \"month\": 6,\n    \"year\": 2026,\n    \"alertThreshold\": 80\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Get All Budgets (Current Month)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/budgets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "budgets"
+              ]
+            },
+            "description": "Get all budgets set by the user for the current month."
+          }
+        },
+        {
+          "name": "Get Budget by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/budgets/{{budget_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "budgets",
+                "{{budget_id}}"
+              ]
+            },
+            "description": "Get a single budget entry by its ID."
+          }
+        },
+        {
+          "name": "Get Budgets for Specific Month",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/budgets/month/{{year}}/{{month}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "budgets",
+                "month",
+                "{{year}}",
+                "{{month}}"
+              ]
+            },
+            "description": "Get all budgets for a specific month/year."
+          }
+        },
+        {
+          "name": "⭐ Get Budget Status (Spent vs Limit)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/budgets/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "budgets",
+                "status"
+              ]
+            },
+            "description": "⭐ KEY ENDPOINT: Returns budget status for each category — limit, spent, remaining, percentage, status (ON_TRACK / WARNING / EXCEEDED).\n\nExample response:\n[\n  {\n    \"category\": \"Food & Dining\",\n    \"budgetLimit\": 5000,\n    \"spentAmount\": 3800,\n    \"remainingAmount\": 1200,\n    \"percentUsed\": 76,\n    \"status\": \"ON_TRACK\"\n  }\n]"
+          }
+        },
+        {
+          "name": "Update Budget",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/budgets/{{budget_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "budgets",
+                "{{budget_id}}"
+              ]
+            },
+            "description": "Update budget limit or alert threshold.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"categoryId\": 1,\n    \"budgetLimit\": 6000.0,\n    \"month\": 6,\n    \"year\": 2026,\n    \"alertThreshold\": 85\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete Budget",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/budgets/{{budget_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "budgets",
+                "{{budget_id}}"
+              ]
+            },
+            "description": "Delete a budget entry."
+          }
+        },
+        {
+          "name": "❌ Set Duplicate Budget (Same Category + Month)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/budgets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "budgets"
+              ]
+            },
+            "description": "Test: Should return 409 Conflict — budget already exists for this category/month.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"categoryId\": 1,\n    \"budgetLimit\": 8000.0,\n    \"month\": 6,\n    \"year\": 2026,\n    \"alertThreshold\": 80\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔄 Recurring Expenses",
+      "description": "Manage recurring expenses (subscriptions, rent, EMI, etc.).\nScheduler auto-creates expenses based on frequency.\nAll endpoints require JWT authentication.",
+      "item": [
+        {
+          "name": "Create Recurring — Netflix",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/recurring-expenses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recurring-expenses"
+              ]
+            },
+            "description": "Create a recurring expense. Scheduler will auto-create expense entries based on frequency.\nRecurring ID is AUTO-SAVED.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"amount\": 649.0,\n    \"description\": \"Netflix monthly subscription\",\n    \"categoryId\": 11,\n    \"frequency\": \"MONTHLY\",\n    \"startDate\": \"2026-01-05\",\n    \"endDate\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.success && jsonData.data && jsonData.data.recurringId) {",
+                  "    pm.collectionVariables.set('recurring_id', jsonData.data.recurringId);",
+                  "    console.log('✅ Recurring ID saved: ' + jsonData.data.recurringId);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Recurring — Gym",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/recurring-expenses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recurring-expenses"
+              ]
+            },
+            "description": "Sample: Gym recurring expense with end date",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"amount\": 1200.0,\n    \"description\": \"Gym monthly membership\",\n    \"categoryId\": 12,\n    \"frequency\": \"MONTHLY\",\n    \"startDate\": \"2026-01-01\",\n    \"endDate\": \"2026-12-31\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Create Recurring — Room Rent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/recurring-expenses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recurring-expenses"
+              ]
+            },
+            "description": "Sample: Rent recurring expense (no end date = indefinite)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"amount\": 12000.0,\n    \"description\": \"Monthly room rent\",\n    \"categoryId\": 3,\n    \"frequency\": \"MONTHLY\",\n    \"startDate\": \"2026-01-01\",\n    \"endDate\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Get All Recurring Expenses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/recurring-expenses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recurring-expenses"
+              ]
+            },
+            "description": "Get all recurring expenses for the logged-in user."
+          }
+        },
+        {
+          "name": "Get Recurring Expense by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/recurring-expenses/{{recurring_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recurring-expenses",
+                "{{recurring_id}}"
+              ]
+            },
+            "description": "Get a single recurring expense by its ID."
+          }
+        },
+        {
+          "name": "Update Recurring Expense",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/recurring-expenses/{{recurring_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recurring-expenses",
+                "{{recurring_id}}"
+              ]
+            },
+            "description": "Update a recurring expense (e.g., price increase).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"amount\": 799.0,\n    \"description\": \"Netflix premium subscription\",\n    \"categoryId\": 11,\n    \"frequency\": \"MONTHLY\",\n    \"startDate\": \"2026-01-05\",\n    \"endDate\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Pause/Resume Recurring Expense",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/recurring-expenses/{{recurring_id}}/toggle",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recurring-expenses",
+                "{{recurring_id}}",
+                "toggle"
+              ]
+            },
+            "description": "Toggle active/inactive status. Paused recurring expenses won't generate new expenses."
+          }
+        },
+        {
+          "name": "Delete Recurring Expense",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/recurring-expenses/{{recurring_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recurring-expenses",
+                "{{recurring_id}}"
+              ]
+            },
+            "description": "Delete a recurring expense. Previously generated expenses are NOT deleted."
+          }
+        }
+      ]
+    },
+    {
+      "name": "📈 Dashboard",
+      "description": "Analytics and summary endpoints — monthly summary, category breakdown, trends, top expenses.\nAll endpoints require JWT authentication.\n\n⭐ These are the most impressive endpoints for interviews!",
+      "item": [
+        {
+          "name": "⭐ Dashboard Summary (Current Month)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dashboard/summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "summary"
+              ]
+            },
+            "description": "⭐ KEY ENDPOINT: Get complete financial summary for current month.\n\nReturns:\n- totalIncome, totalExpense, netSavings\n- savingsPercentage\n- totalBudgetLimit, totalBudgetSpent, budgetUtilization\n- expenseCount\n- topCategory, topCategoryAmount"
+          }
+        },
+        {
+          "name": "Dashboard Summary (Specific Month)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dashboard/summary/{{year}}/{{month}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "summary",
+                "{{year}}",
+                "{{month}}"
+              ]
+            },
+            "description": "Get financial summary for a specific month/year."
+          }
+        },
+        {
+          "name": "⭐ Category Breakdown (Current Month)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dashboard/category-breakdown",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "category-breakdown"
+              ]
+            },
+            "description": "⭐ KEY ENDPOINT: Category-wise expense breakdown for current month.\n\nReturns:\n[\n  { \"category\": \"Food\", \"amount\": 8500, \"percentage\": 29.82, \"count\": 18 },\n  { \"category\": \"Transport\", \"amount\": 4200, \"percentage\": 14.74, \"count\": 12 }\n]"
+          }
+        },
+        {
+          "name": "Category Breakdown (Specific Month)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dashboard/category-breakdown/{{year}}/{{month}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "category-breakdown",
+                "{{year}}",
+                "{{month}}"
+              ]
+            },
+            "description": "Category-wise expense breakdown for a specific month."
+          }
+        },
+        {
+          "name": "⭐ Monthly Trend (Last 6 Months)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dashboard/monthly-trend",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "monthly-trend"
+              ]
+            },
+            "description": "⭐ KEY ENDPOINT: Income vs Expense trend for the last 6 months.\n\nReturns:\n[\n  { \"month\": \"Jan 2026\", \"income\": 40000, \"expense\": 32000, \"savings\": 8000 },\n  { \"month\": \"Feb 2026\", \"income\": 40000, \"expense\": 28000, \"savings\": 12000 }\n]"
+          }
+        },
+        {
+          "name": "Daily Expenses for a Month",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dashboard/daily-expenses/{{year}}/{{month}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "daily-expenses",
+                "{{year}}",
+                "{{month}}"
+              ]
+            },
+            "description": "Day-wise expense totals for a specific month. Useful for bar/line charts."
+          }
+        },
+        {
+          "name": "Top 5 Expenses (Current Month)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dashboard/top-expenses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "top-expenses"
+              ]
+            },
+            "description": "Get the top 5 highest expenses for the current month."
+          }
+        }
+      ]
+    },
+    {
+      "name": "📤 Export",
+      "description": "Export expense data as CSV.\nAll endpoints require JWT authentication.",
+      "item": [
+        {
+          "name": "Export All Expenses as CSV",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/export/csv",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "export",
+                "csv"
+              ]
+            },
+            "description": "Download all expenses as a CSV file.\n\nNote: Response will be a file download (Content-Type: text/csv)."
+          }
+        },
+        {
+          "name": "Export Expenses for Specific Month as CSV",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/export/csv?month=6&year=2026",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "export",
+                "csv"
+              ],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "6"
+                },
+                {
+                  "key": "year",
+                  "value": "2026"
+                }
+              ]
+            },
+            "description": "Download expenses for a specific month as CSV."
+          }
+        }
+      ]
+    },
+    {
+      "name": "🚨 Error Testing",
+      "description": "Test error handling and edge cases. Use these to verify your GlobalExceptionHandler works correctly.",
+      "item": [
+        {
+          "name": "❌ Access Without Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses"
+              ]
+            },
+            "description": "Test: Should return 401 Unauthorized — no JWT token provided."
+          }
+        },
+        {
+          "name": "❌ Access With Invalid Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer this.is.an.invalid.token",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses"
+              ]
+            },
+            "description": "Test: Manually add header 'Authorization: Bearer invalid_token_here' — should return 401."
+          }
+        },
+        {
+          "name": "❌ Get Non-Existent Expense",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses/99999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses",
+                "99999"
+              ]
+            },
+            "description": "Test: Should return 404 Not Found — expense with this ID doesn't exist."
+          }
+        },
+        {
+          "name": "❌ Create Expense Without Required Fields",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses"
+              ]
+            },
+            "description": "Test: Should return 400 Bad Request with validation errors.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"description\": \"Missing amount and date\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "❌ Create Expense With Invalid Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses"
+              ]
+            },
+            "description": "Test: Should return 404 Not Found — category doesn't exist.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"amount\": 500,\n    \"description\": \"Test expense\",\n    \"expenseDate\": \"2026-06-15\",\n    \"categoryId\": 99999,\n    \"paymentMethod\": \"UPI\",\n    \"status\": \"CONFIRMED\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "❌ Create Expense With Negative Amount",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/expenses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "expenses"
+              ]
+            },
+            "description": "Test: Should return 400 Bad Request — amount must be positive.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"amount\": -500,\n    \"description\": \"Negative amount test\",\n    \"expenseDate\": \"2026-06-15\",\n    \"categoryId\": 1,\n    \"status\": \"CONFIRMED\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
